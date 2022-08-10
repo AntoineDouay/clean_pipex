@@ -6,7 +6,7 @@
 /*   By: adouay <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/20 11:34:30 by adouay            #+#    #+#             */
-/*   Updated: 2022/08/05 18:13:49 by adouay           ###   ########.fr       */
+/*   Updated: 2022/08/10 19:13:39 by adouay           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,30 +24,28 @@
 typedef struct s_pipex{
 	int		pid;
 	int		here_doc;
+	int		index;
 
 	int		infile_fd;
 	int		outfile_fd;
-
-	int		commands_nbr;
-
+	
 	char	**cmds;
-
-	char	**cmd_options;
-	char	*cmd_path;
-
-	char 	*path_line;
 	char	**paths;
 }	t_pipex;
 
-typerdef enum e_type{
+typedef enum e_type{
 	APPEND,
 	TRUNC,
 	RDONLY,
 }	t_type;
 
-void	create_child(t_pipex *pipex, char **envp);
-void	close_pipes(t_pipex *pipex);
+char	*path_finding(char **envp);
+void	make_dup(int oldfd, int newfd);
+void	create_child(t_pipex *pipex, char *av, char **envp);
+void	close_pipe(int fd[2]);
 void	free_double_array(char **tab);
-void    here_doc(t_pipex *pipex,char **av);
+void    here_doc(char **av);
+
+void	get_execve(char *av, char **envp);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: adouay <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/20 11:34:38 by adouay            #+#    #+#             */
-/*   Updated: 2022/08/05 18:41:20 by adouay           ###   ########.fr       */
+/*   Updated: 2022/08/10 19:14:25 by adouay           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,31 +27,15 @@ int	open_file(char *file, t_type type)
 {
 	int	fd;
 
-	if (type  == TRUNC)
-		fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0664);
-	if (type  == APPEND)
-		fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0664);
-	if (type  == RDONLY)
-		fd = open(file, O_RDONLY);
+	if (type == TRUNC)
+		fd = open(file, O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC, 0664);
+	if (type == APPEND)
+		fd = open(file, O_WRONLY | O_CREAT | O_APPEND | O_CLOEXEC, 0664);
+	if (type == RDONLY)
+		fd = open(file, O_RDONLY | O_CLOEXEC);
 	if (fd == -1)
 		return (-10); // ERROR
-}
-
-int	get_commands(char **av, t_pipex *pipex)
-{
-	int i;
-
-	i = 0;
-	pipex->cmds = malloc(sizeof(char *) * (pipex->commands_nbr + 1));
-	if (!pipex->cmds)
-		return (1);
-	while (i < pipex->commands_nbr)
-	{
-		pipex->cmds[i] = av[i + 2 + pipex->here_doc];
-		i++;
-	}
-	pipex->cmds[i] = 0;
-	return (0);
+	return (fd);
 }
 
 char	*path_finding(char **envp)
@@ -59,9 +43,11 @@ char	*path_finding(char **envp)
 	int	i;
 
 	i = 0;
-	while(ft_strncmp(envp[i], "PATH", 4) != 0)
+	while (envp[i] && ft_strncmp(envp[i], "PATH", 4) != 0)
 		i++;
-	return (envp[i]);
+	if (!envp[i])
+		return (NULL);
+	return(envp[i]);
 }
 
 void	free_double_array(char **tab)
@@ -81,25 +67,32 @@ void	free_double_array(char **tab)
 
 int	main(int ac, char **av, char **envp)
 {
+	char	*path_line;
 	t_pipex	pipex;
 
 	pipex.here_doc = 0;
 	if (parse_args(ac, av, &pipex))
 		return (0);
-	pipex.commands_nbr = ac - 3 - pipex.here_doc;
 	if (pipex.here_doc == 1)
-		here_doc(&pipex, av);
-	if (get_commands(av, &pipex))
-		return (0);
-	pipex.path_line = path_finding(envp) + 5;
-	pipex.paths = ft_split(pipex.path_line, ':');
-	while (++(pipex.cmds_pos) < pipex.commands_nbr)
-		create_child(&pipex, envp);
-	close_pipes(&pipex);
-	close(pipex.infile_fd);
-	close(pipex.outfile_fd);
-	free (pipex.pipe);
-	free (pipex.cmds);
-	free_double_array(pipex.paths);
+	{	
+		pipex.index = 3;
+		here_doc(av);
+		pipex.outfile_fd = open_file(av[ac - 1], APPEND);
+	}
+	else
+	{ 
+		pipex.index = 2;
+		pipex.infile_fd = open_file(av[1], RDONLY); //ERROR -1 A GERER
+		make_dup(pipex.infile_fd, STDIN_FILENO);
+		pipex.outfile_fd = open_file(av[ac - 1], TRUNC); //ERROR -1 A GERER
+	}
+	path_line = path_finding(envp);
+	if (path_line == NULL)
+		return (0); // ERROR PATH
+	pipex.paths = ft_split(path_line + 5, ':');
+	while (pipex.index < (ac - 2))
+		create_child(&pipex, av[pipex.index++], envp);
+	make_dup(pipex.outfile_fd, STDOUT_FILENO);
+	get_execve(av[ac - 2], envp);
 	return (0);
 }

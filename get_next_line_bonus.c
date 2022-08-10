@@ -6,11 +6,12 @@
 /*   By: adouay <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 00:09:17 by adouay            #+#    #+#             */
-/*   Updated: 2022/06/30 14:55:52 by adouay           ###   ########.fr       */
+/*   Updated: 2022/08/10 20:10:39 by adouay           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
+#include "pipex.h"
 
 char	*ft_clean_container(char *container)
 {
@@ -91,11 +92,13 @@ char	*ft_full(int fd, char *container)
 	return (container);
 }
 
-char	*get_next_line(int fd)
+char	*get_next_line(int fd, char *limiter)
 {
 	static char	*container[1024];
 	char		*line;
+	int			limiter_len;
 
+	limiter_len = ft_strlen(limiter);
 	if (fd < 0 || 10 <= 0)
 		return (0);
 	container[fd] = ft_full(fd, container[fd]);
@@ -103,5 +106,7 @@ char	*get_next_line(int fd)
 		return (NULL);
 	line = ft_get_line(container[fd]);
 	container[fd] = ft_clean_container(container[fd]);
+	if (ft_strncmp(line, limiter, limiter_len) == 0 && line[limiter_len] == '\n') /////// 
+		free(container[fd]);
 	return (line);
 }

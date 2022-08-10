@@ -6,7 +6,7 @@
 /*   By: adouay <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 00:15:49 by adouay            #+#    #+#             */
-/*   Updated: 2022/06/30 14:47:53 by adouay           ###   ########.fr       */
+/*   Updated: 2022/08/10 20:10:06 by adouay           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef GET_NEXT_LINE_BONUS_H
@@ -21,7 +21,7 @@
 # include <stdlib.h>
 # include <stddef.h>
 
-char	*get_next_line(int fd);
+char	*get_next_line(int fd, char *limiter);
 char	*ft_strjoin_pimped(char *s1, char *s2);
 char	*ft_strchr(const char *s, int c);
 size_t	ft_strlen(const char *s);

@@ -6,75 +6,73 @@
 /*   By: adouay <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 19:06:22 by adouay            #+#    #+#             */
-/*   Updated: 2022/08/04 15:37:42 by adouay           ###   ########.fr       */
+/*   Updated: 2022/08/10 18:28:58 by adouay           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-void	make_dup(int in, int out)
+void	make_dup(int oldfd, int newfd)
 {
-	dup2(in, 0);
-	dup2(out, 1);
+	if (dup2(oldfd, newfd) == -1)
+		printf ("hihihi\n");  // ERROR EXIT;
 }
 
-void	close_pipes(t_pipex *pipex)
+void	close_pipe(int fd[2])
 {
-	int	i;
-
-	i = 0;
-	while(i < pipex->pipe_nbr * 2)
-	{
-		close (pipex->pipe[i]);
-		i++;
-	}
+	close(fd[0]);
+	close(fd[1]);
 }
 
-char	*get_cmd_path(t_pipex *pipex)
+void	get_execve(char *av, char **envp)
 {
 	char	*tmp;
 	char	*cmd;
+	char	**cmd_option;
+	char	**paths;
 	int	i;
 
 	i = 0;
-	if(access(pipex->cmd_options[0], F_OK | R_OK) == 0)
-		return (pipex->cmd_options[0]);
-	while (pipex->paths[i] != 0)
+
+	cmd_option = ft_split(av, ' ');
+	paths = ft_split(path_finding(envp) + 5, ':' );
+	if(access(cmd_option[0], F_OK | R_OK) == 0)
+		execve(cmd_option[0], cmd_option, envp);
+	while (paths[i] != 0)
 	{
-		tmp = ft_strjoin(pipex->paths[i], "/");
-		cmd = ft_strjoin(tmp, pipex->cmd_options[0]);
+		tmp = ft_strjoin(paths[i], "/");
+		cmd = ft_strjoin(tmp, cmd_option[0]);
 		free(tmp);
 		if(access(cmd, F_OK | R_OK) == 0)
-			return (cmd);
+			execve(cmd, cmd_option, envp);
 		free(cmd);
 		i++;
 	}
-	cmd = NULL;
-	return (cmd);
 }
 
-void	create_child(t_pipex *pipex, char **envp)
+void	create_child(t_pipex *pipex, char *av, char **envp)
 {
-	pipex->pid = fork();
-	if (pipex->pid == 0)
+	int 	pid;
+	int		fd[2];
+
+	if (pipe(fd) == -1)
+		printf("error pipe"); // ERROR;
+	pid = fork();
+	if (pid == 0)
 	{
-		if(pipex->cmds_pos == 0)
-			make_dup(pipex->infile_fd, pipex->pipe[1]);
-		else if(pipex->cmds_pos == pipex->commands_nbr - 1)
-			make_dup(pipex->pipe[pipex->cmds_pos * 2 - 2], pipex->outfile_fd);
-		else
-			make_dup(pipex->pipe[pipex->cmds_pos * 2 - 2], pipex->pipe[pipex->cmds_pos * 2 + 1]);
-		close_pipes(pipex);
-		pipex->cmd_options = ft_split(pipex->cmds[pipex->cmds_pos], ' ');
-		pipex->cmd_path = get_cmd_path(pipex);
-		if (pipex->cmd_path == NULL)
-		{
-			free (pipex->pipe);
-			free (pipex->cmds);
-			free_double_array(pipex->paths);
-			free_double_array(pipex->cmd_options);
-			exit(0);// ERROR
-		}
-		execve(pipex->cmd_path, pipex->cmd_options, envp);		
+		if (pipex->infile_fd == -1)
+			printf("INFILE -1\n"); // ERROR;
+		make_dup(fd[1], STDOUT_FILENO);
+		close_pipe(fd);
+		get_execve(av, envp);		
 	}
+	make_dup(fd[0], 0);
+	close_pipe(fd);
+	waitpid(-1, NULL, WNOHANG);
 }
+
+
+
+
+
+
