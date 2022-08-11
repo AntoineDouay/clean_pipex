@@ -6,7 +6,7 @@
 /*   By: adouay <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/20 11:34:38 by adouay            #+#    #+#             */
-/*   Updated: 2022/08/11 20:02:52 by adouay           ###   ########.fr       */
+/*   Updated: 2022/08/11 21:22:27 by adouay           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,10 @@ void	parse_args(int ac, char **av, t_pipex *pipex)
 		exit (arg_error());
 	if (ft_strncmp(av[1], "here_doc", 8) == 0 && av[1][8] == '\0')
 		pipex->here_doc = 1;
-	if	(ac < 6 && pipex->here_doc == 1)
+	if (ac < 6 && pipex->here_doc == 1)
 		exit (arg_error());
 	if (access(av[1], F_OK | R_OK) == -1 && pipex->here_doc == 0)
-		exit (file_error(av[1]));  
+		exit (file_error(av[1]));
 	return ;
 }
 
@@ -52,6 +52,23 @@ char	*path_finding(char **envp)
 	return (envp[i]);
 }
 
+void	heredoc_or_not(t_pipex *pipex, int ac, char **av)
+{
+	if (pipex->here_doc == 1)
+	{	
+		pipex->index = 3;
+		here_doc(av[2]);
+		pipex->outfile_fd = open_file(av[ac - 1], APPEND);
+	}
+	else
+	{
+		pipex->index = 2;
+		pipex->infile_fd = open_file(av[1], RDONLY);
+		make_dup(pipex->infile_fd, 0);
+		pipex->outfile_fd = open_file(av[ac - 1], TRUNC);
+	}
+}
+
 int	main(int ac, char **av, char **envp)
 {
 	char	*path_line;
@@ -59,19 +76,7 @@ int	main(int ac, char **av, char **envp)
 
 	pipex.here_doc = 0;
 	parse_args(ac, av, &pipex);
-	if (pipex.here_doc == 1)
-	{	
-		pipex.index = 3;
-		here_doc(av);
-		pipex.outfile_fd = open_file(av[ac - 1], APPEND);
-	}
-	else
-	{
-		pipex.index = 2;
-		pipex.infile_fd = open_file(av[1], RDONLY);
-		make_dup(pipex.infile_fd, 0);
-		pipex.outfile_fd = open_file(av[ac - 1], TRUNC);
-	}
+	heredoc_or_not(&pipex, ac, av);
 	path_line = path_finding(envp);
 	if (path_line == NULL)
 		exit(msg_error("path not found"));

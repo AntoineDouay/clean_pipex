@@ -6,7 +6,7 @@
 /*   By: adouay <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/20 11:34:30 by adouay            #+#    #+#             */
-/*   Updated: 2022/08/11 19:17:47 by adouay           ###   ########.fr       */
+/*   Updated: 2022/08/11 21:39:44 by adouay           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,14 +34,19 @@ typedef enum e_type{
 	TRUNC,
 	RDONLY,
 }	t_type;
-
+/* ---- pipex.c ----*/
+void	parse_args(int ac, char **av, t_pipex *pipex);
 char	*path_finding(char **envp);
+int		open_file(char *file, t_type type);
+void	heredoc_or_not(t_pipex *pipex, int ac, char **av);
+/* ---- child.c ----*/
 void	make_dup(int oldfd, int newfd);
 void	create_child(char *av, char **envp);
 void	close_pipe(int fd[2]);
-void	free_double_array(char **tab);
-void	here_doc(char **av);
+void	here_doc(char *av);
 void	get_execve(char *av, char **envp);
+/* ---- error.c ----*/
+void	free_double_array(char **tab);
 int		file_error(char *file);
 int		arg_error(void);
 int		cmd_error(char *cmd);

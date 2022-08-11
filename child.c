@@ -6,7 +6,7 @@
 /*   By: adouay <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 19:06:22 by adouay            #+#    #+#             */
-/*   Updated: 2022/08/11 19:56:08 by adouay           ###   ########.fr       */
+/*   Updated: 2022/08/11 21:46:39 by adouay           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,32 +24,14 @@ void	close_pipe(int fd[2])
 	close(fd[1]);
 }
 
-void	free_double_array(char **tab)
-{
-	int	i;
-
-	i = 0;
-	while (tab[i] != 0)
-	{
-		free (tab[i]);
-		i++;
-	}
-	free (tab);
-	return ;
-}
-
-void	get_execve(char *av, char **envp)
+void	search_cmd_path(char **cmd_option, char **envp)
 {
 	char	*tmp;
 	char	*cmd;
-	char	**cmd_option;
 	char	**paths;
 	int		i;
 
 	i = 0;
-	cmd_option = ft_split(av, ' ');
-	if (access(cmd_option[0], F_OK | R_OK) == 0)
-		execve(cmd_option[0], cmd_option, envp);
 	paths = ft_split(path_finding(envp) + 5, ':' );
 	while (paths[i] != 0)
 	{
@@ -64,8 +46,18 @@ void	get_execve(char *av, char **envp)
 		free(cmd);
 		i++;
 	}
-	free_double_array(cmd_option);
 	free_double_array(paths);
+}
+
+void	get_execve(char *av, char **envp)
+{
+	char	**cmd_option;
+
+	cmd_option = ft_split(av, ' ');
+	if (access(cmd_option[0], F_OK | R_OK) == 0)
+		execve(cmd_option[0], cmd_option, envp);
+	search_cmd_path(cmd_option, envp);
+	free_double_array(cmd_option);
 	exit(cmd_error(av));
 }
 

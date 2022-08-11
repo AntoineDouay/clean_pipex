@@ -6,7 +6,7 @@
 /*   By: adouay <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/30 15:48:49 by adouay            #+#    #+#             */
-/*   Updated: 2022/08/11 20:00:48 by adouay           ###   ########.fr       */
+/*   Updated: 2022/08/11 21:20:01 by adouay           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,10 @@ void	here_doc2(int fd[2], char *limiter)
 		write (0, "pipex here_doc>", 15);
 		line = get_next_line(0, limiter);
 		if (line == NULL)
-			exit(0); // ERROR
+		{
+			close_pipe(fd);
+			exit(0);
+		}
 		if (ft_strncmp(line, limiter, limiter_len) == 0
 			&& line[limiter_len] == '\n')
 		{
@@ -36,7 +39,7 @@ void	here_doc2(int fd[2], char *limiter)
 	}
 }
 
-void	here_doc(char **av)
+void	here_doc(char *av)
 {
 	int		fd[2];
 	int		pid;
@@ -47,7 +50,7 @@ void	here_doc(char **av)
 	if (pid == -1)
 		exit (msg_error("fork error"));
 	if (pid == 0)
-		here_doc2(fd, av[2]);
+		here_doc2(fd, av);
 	else
 	{
 		make_dup(fd[0], STDIN_FILENO);
