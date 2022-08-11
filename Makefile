@@ -6,7 +6,7 @@
 #    By: adouay <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/20 12:22:12 by adouay            #+#    #+#              #
-#    Updated: 2022/08/10 19:12:37 by adouay           ###   ########.fr        #
+#    Updated: 2022/08/11 11:39:47 by adouay           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,6 +17,7 @@ CC = gcc -Wall -Werror -Wextra
 SRC = pipex.c \
 	child.c	\
 	here_doc.c \
+	error.c \
 	get_next_line_bonus.c \
 	get_next_line_utils_bonus.c
 

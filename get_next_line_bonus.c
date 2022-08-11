@@ -6,7 +6,7 @@
 /*   By: adouay <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 00:09:17 by adouay            #+#    #+#             */
-/*   Updated: 2022/08/10 20:10:39 by adouay           ###   ########.fr       */
+/*   Updated: 2022/08/11 15:35:29 by adouay           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,8 @@ char	*get_next_line(int fd, char *limiter)
 		return (NULL);
 	line = ft_get_line(container[fd]);
 	container[fd] = ft_clean_container(container[fd]);
-	if (ft_strncmp(line, limiter, limiter_len) == 0 && line[limiter_len] == '\n') /////// 
+	if (ft_strncmp(line, limiter, limiter_len) == 0
+		&& line[limiter_len] == '\n')
 		free(container[fd]);
 	return (line);
 }

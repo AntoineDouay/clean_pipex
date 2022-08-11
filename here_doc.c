@@ -6,11 +6,12 @@
 /*   By: adouay <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/30 15:48:49 by adouay            #+#    #+#             */
-/*   Updated: 2022/08/10 20:09:39 by adouay           ###   ########.fr       */
+/*   Updated: 2022/08/11 20:00:48 by adouay           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+
 void	here_doc2(int fd[2], char *limiter)
 {
 	char	*line;
@@ -23,13 +24,14 @@ void	here_doc2(int fd[2], char *limiter)
 		line = get_next_line(0, limiter);
 		if (line == NULL)
 			exit(0); // ERROR
-		if (ft_strncmp(line, limiter, limiter_len) == 0 && line[limiter_len] == '\n')
+		if (ft_strncmp(line, limiter, limiter_len) == 0
+			&& line[limiter_len] == '\n')
 		{
 			free(line);
 			close_pipe(fd);
 			exit(0);
 		}
-		write(fd[1], &line, ft_strlen(line));
+		ft_putstr_fd(line, fd[1]);
 		free (line);
 	}
 }
@@ -40,8 +42,10 @@ void	here_doc(char **av)
 	int		pid;
 
 	if (pipe(fd) == -1)
-		return ; 	// ERROR
+		exit (msg_error("pipe error"));
 	pid = fork();
+	if (pid == -1)
+		exit (msg_error("fork error"));
 	if (pid == 0)
 		here_doc2(fd, av[2]);
 	else
