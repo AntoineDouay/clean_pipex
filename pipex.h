@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adouay <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: adouay <adouay@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/20 11:34:30 by adouay            #+#    #+#             */
-/*   Updated: 2022/08/11 21:39:44 by adouay           ###   ########.fr       */
+/*   Updated: 2022/09/19 17:36:02 by adouay           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ int		open_file(char *file, t_type type);
 void	heredoc_or_not(t_pipex *pipex, int ac, char **av);
 /* ---- child.c ----*/
 void	make_dup(int oldfd, int newfd);
-void	create_child(char *av, char **envp);
+void	create_child(t_pipex *pipex, int ac, char *av, char **envp);
 void	close_pipe(int fd[2]);
 void	here_doc(char *av);
 void	get_execve(char *av, char **envp);

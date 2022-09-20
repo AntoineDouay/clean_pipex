@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adouay <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: adouay <adouay@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/20 11:34:38 by adouay            #+#    #+#             */
-/*   Updated: 2022/08/11 21:22:27 by adouay           ###   ########.fr       */
+/*   Updated: 2022/09/20 20:52:22 by adouay           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,11 @@ int	open_file(char *file, t_type type)
 	int	fd;
 
 	if (type == TRUNC)
-		fd = open(file, O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC, 0664);
+		fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0664);
 	if (type == APPEND)
-		fd = open(file, O_WRONLY | O_CREAT | O_APPEND | O_CLOEXEC, 0664);
+		fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0664);
 	if (type == RDONLY)
-		fd = open(file, O_RDONLY | O_CLOEXEC, 0664);
+		fd = open(file, O_RDONLY, 0664);
 	if (fd == -1)
 		exit (msg_error("open error"));
 	return (fd);
@@ -80,9 +80,8 @@ int	main(int ac, char **av, char **envp)
 	path_line = path_finding(envp);
 	if (path_line == NULL)
 		exit(msg_error("path not found"));
-	while (pipex.index < (ac - 2))
-		create_child(av[pipex.index++], envp);
-	make_dup(pipex.outfile_fd, 1);
-	get_execve(av[ac - 2], envp);
+	while (pipex.index < (ac - 1))
+		create_child(&pipex, ac, av[pipex.index++], envp);
+	wait(0);
 	return (0);
 }

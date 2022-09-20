@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   child.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adouay <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: adouay <adouay@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 19:06:22 by adouay            #+#    #+#             */
-/*   Updated: 2022/08/11 21:46:39 by adouay           ###   ########.fr       */
+/*   Updated: 2022/09/20 20:52:29 by adouay           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void	get_execve(char *av, char **envp)
 	exit(cmd_error(av));
 }
 
-void	create_child(char *av, char **envp)
+void	create_child(t_pipex *pipex, int ac, char *av, char **envp)
 {
 	int		pid;
 	int		fd[2];
@@ -71,11 +71,18 @@ void	create_child(char *av, char **envp)
 	pid = fork();
 	if (pid == 0)
 	{
-		make_dup(fd[1], STDOUT_FILENO);
+		if (pipex->index == (ac - 1))
+			make_dup(pipex->outfile_fd, 1);
+		else
+			make_dup(fd[1], STDOUT_FILENO);	
 		close_pipe(fd);
 		get_execve(av, envp);
 	}
-	make_dup(fd[0], 0);
+	if (pipex->index != (ac - 1))
+		make_dup(fd[0], 0);
 	close_pipe(fd);
-	waitpid(-1, NULL, WNOHANG);
 }
+
+// si infile pas existant pas faire premier commande mais le reste 
+// cmd il y a un / alors acces si faux cmd_error
+// si pas de / dans cmd alors search cmd path si pas trouver avec envp alors regarder dans le dossier courant si pas trouver cmd_error
