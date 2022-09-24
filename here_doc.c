@@ -6,13 +6,13 @@
 /*   By: adouay <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/30 15:48:49 by adouay            #+#    #+#             */
-/*   Updated: 2022/08/11 21:20:01 by adouay           ###   ########.fr       */
+/*   Updated: 2022/09/23 18:25:16 by adouay           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-void	here_doc2(int fd[2], char *limiter)
+void	here_doc2(int fd[3], char *limiter)
 {
 	char	*line;
 	int		limiter_len;
@@ -31,6 +31,7 @@ void	here_doc2(int fd[2], char *limiter)
 			&& line[limiter_len] == '\n')
 		{
 			free(line);
+			fd[2] = fd[0];
 			close_pipe(fd);
 			exit(0);
 		}
@@ -39,22 +40,20 @@ void	here_doc2(int fd[2], char *limiter)
 	}
 }
 
-void	here_doc(char *av)
+void	here_doc(t_pipex *pipex, char *av)
 {
-	int		fd[2];
 	int		pid;
 
-	if (pipe(fd) == -1)
+	if (pipe(pipex->fd) == -1)
 		exit (msg_error("pipe error"));
 	pid = fork();
 	if (pid == -1)
 		exit (msg_error("fork error"));
 	if (pid == 0)
-		here_doc2(fd, av);
+		here_doc2(pipex->fd, av);
 	else
 	{
-		make_dup(fd[0], STDIN_FILENO);
-		close_pipe(fd);
+		close(pipex->fd[1]);
 		waitpid(pid, NULL, 0);
 	}
 }

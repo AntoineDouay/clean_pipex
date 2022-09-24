@@ -6,7 +6,7 @@
 /*   By: adouay <adouay@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/20 11:34:30 by adouay            #+#    #+#             */
-/*   Updated: 2022/09/19 17:36:02 by adouay           ###   ########.fr       */
+/*   Updated: 2022/09/24 23:21:52 by adouay           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 # include <stdio.h>
 
 typedef struct s_pipex{
-	int		pid;
+	int		fd[3];
 	int		here_doc;
 	int		index;
 	int		infile_fd;
@@ -40,16 +40,18 @@ char	*path_finding(char **envp);
 int		open_file(char *file, t_type type);
 void	heredoc_or_not(t_pipex *pipex, int ac, char **av);
 /* ---- child.c ----*/
-void	make_dup(int oldfd, int newfd);
-void	create_child(t_pipex *pipex, int ac, char *av, char **envp);
-void	close_pipe(int fd[2]);
-void	here_doc(char *av);
+void	create_child(t_pipex *pipex, int ac, char **av, char **envp);
 void	get_execve(char *av, char **envp);
 /* ---- error.c ----*/
-void	free_double_array(char **tab);
 int		file_error(char *file);
 int		arg_error(void);
 int		cmd_error(char *cmd);
 int		msg_error(char *msg);
+/* ---- here_doc.c ---- */
+void	here_doc(t_pipex *pipex, char *av);
+/* ---- utils.c ---- */
+void	make_dup(int oldfd, int newfd);
+void	close_pipe(int fd[3]);
+void	free_double_array(char **tab);
 
 #endif

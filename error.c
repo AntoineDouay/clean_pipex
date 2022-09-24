@@ -6,7 +6,7 @@
 /*   By: adouay <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/11 11:27:51 by adouay            #+#    #+#             */
-/*   Updated: 2022/08/11 21:14:07 by adouay           ###   ########.fr       */
+/*   Updated: 2022/09/24 23:20:02 by adouay           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,18 +42,4 @@ int	msg_error(char *msg)
 	ft_putstr_fd(msg, 2);
 	ft_putstr_fd("\n", 2);
 	return (8);
-}
-
-void	free_double_array(char **tab)
-{
-	int	i;
-
-	i = 0;
-	while (tab[i] != 0)
-	{
-		free (tab[i]);
-		i++;
-	}
-	free (tab);
-	return ;
 }
