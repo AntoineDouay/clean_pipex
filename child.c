@@ -6,7 +6,7 @@
 /*   By: adouay <adouay@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 19:06:22 by adouay            #+#    #+#             */
-/*   Updated: 2022/09/24 23:20:21 by adouay           ###   ########.fr       */
+/*   Updated: 2022/09/27 17:58:47 by adouay           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,9 @@ void	search_cmd_path(char **cmd_option, char **envp)
 	int		i;
 
 	i = 0;
-	paths = ft_split(path_finding(envp) + 5, ':' );
+	paths = ft_split(path_finding(envp) + 5, ':');
+	if (!paths)
+		exit(msg_error("split error"));
 	while (paths[i] != 0)
 	{
 		tmp = ft_strjoin(paths[i], "/");
@@ -41,7 +43,11 @@ void	get_execve(char *av, char **envp)
 {
 	char	**cmd_option;
 
+	if (av[0] == '\0')
+		exit (cmd_error(av));
 	cmd_option = ft_split(av, ' ');
+	if (!cmd_option)
+		exit(msg_error("split error"));
 	if (ft_strchr(cmd_option[0], 47) != NULL)
 	{
 		execve(cmd_option[0], cmd_option, NULL);
@@ -50,6 +56,7 @@ void	get_execve(char *av, char **envp)
 	}
 	if (envp[0])
 		search_cmd_path(cmd_option, envp);
+	execve(cmd_option[0], cmd_option, NULL);
 	free_double_array(cmd_option);
 	exit(cmd_error(av));
 }
@@ -68,9 +75,11 @@ void	first_child(t_pipex *pipex)
 
 void	last_child(t_pipex *pipex)
 {	
+	if (pipex->outfile_fd == -1)
+		exit(0);
 	make_dup(pipex->fd[2], 0);
 	make_dup(pipex->outfile_fd, 1);
-	close(pipex->fd[1]);
+	close(pipex->fd[0]);
 }
 
 void	create_child(t_pipex *pipex, int ac, char **av, char **envp)
@@ -101,18 +110,3 @@ void	create_child(t_pipex *pipex, int ac, char **av, char **envp)
 	if (pipex->fd[2] > 0)
 		close(pipex->fd[2]);
 }
-
-		//	if (pipex->fd[1] > 0)
-
-		//if ((pipex->index == 2 && pipex->infile_fd == -1))
-		//	exit(0);
-		// if (pipex->index == 2)
-		//	first_child(pipex);
-		//{
-		//	if (pipex->here_doc == 0)
-		//		make_dup(pipex->infile_fd, 0);
-		//	if (pipex->here_doc == 1)
-		//		make_dup(pipex->fd[2], 0);
-		//	make_dup(pipex->fd[1], 1);
-		//	close(pipex->fd[0]);
-		//}

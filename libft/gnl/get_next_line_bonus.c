@@ -6,12 +6,11 @@
 /*   By: adouay <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/19 00:09:17 by adouay            #+#    #+#             */
-/*   Updated: 2022/08/11 15:35:29 by adouay           ###   ########.fr       */
+/*   Updated: 2022/09/26 12:50:51 by adouay           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
-#include "pipex.h"
 
 char	*ft_clean_container(char *container)
 {
@@ -28,7 +27,7 @@ char	*ft_clean_container(char *container)
 		free (container);
 		return (NULL);
 	}
-	new = malloc(sizeof(char) * (ft_strlen(container) - i + 1));
+	new = malloc(sizeof(char) * (ft_strlen_gnl(container) - i + 1));
 	if (!new)
 	{
 		free (container);
@@ -77,7 +76,7 @@ char	*ft_full(int fd, char *container)
 	buff = malloc(sizeof(char) * (10 + 1));
 	if (!buff)
 		return (NULL);
-	while (!ft_strchr(container, '\n') && n != 0)
+	while (!ft_strchr_gnl(container, '\n') && n != 0)
 	{
 		n = read(fd, buff, 10);
 		if (n < 0)
@@ -98,7 +97,7 @@ char	*get_next_line(int fd, char *limiter)
 	char		*line;
 	int			limiter_len;
 
-	limiter_len = ft_strlen(limiter);
+	limiter_len = ft_strlen_gnl(limiter);
 	if (fd < 0 || 10 <= 0)
 		return (0);
 	container[fd] = ft_full(fd, container[fd]);
@@ -106,7 +105,7 @@ char	*get_next_line(int fd, char *limiter)
 		return (NULL);
 	line = ft_get_line(container[fd]);
 	container[fd] = ft_clean_container(container[fd]);
-	if (ft_strncmp(line, limiter, limiter_len) == 0
+	if (ft_strncmp_gnl(line, limiter, limiter_len) == 0
 		&& line[limiter_len] == '\n')
 		free(container[fd]);
 	return (line);

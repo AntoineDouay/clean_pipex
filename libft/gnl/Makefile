@@ -5,43 +5,39 @@
 #                                                     +:+ +:+         +:+      #
 #    By: adouay <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2022/06/20 12:22:12 by adouay            #+#    #+#              #
-#    Updated: 2022/09/27 15:49:52 by adouay           ###   ########.fr        #
+#    Created: 2022/05/03 20:53:27 by adouay            #+#    #+#              #
+#    Updated: 2022/09/26 15:09:17 by adouay           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = pipex
+NAME = gnl.a
 
-CC = cc -Wall -Werror -Wextra
+CC = gcc -Wall -Wextra -Werror
 
-SRC = pipex.c \
-	child.c	\
-	here_doc.c \
-	error.c \
-	utils.c \
+SRC = get_next_line_bonus.c \
+	get_next_line_utils_bonus.c
 
 OBJ = $(SRC:.c=.o)
 
-all: $(NAME)
+all : $(NAME)
 
-$(NAME): $(OBJ)
-	$(MAKE) -C libft
-	echo "\033[36mMaking Pipex\033[0m"
-	$(CC) $(OBJ) -g -L libft/. -lft -I libft/. -o $(NAME)
+$(NAME) : $(OBJ)
+	echo "\033[33mMaking Gnl\033[0m"
+	ar rc $(NAME) $^
 	echo "\033[32mDone\033[0m"
+
+%.o : %.c
+	$(CC) -c $^
 
 bonus : $(NAME)
 
-%.o: %.c
-	$(CC) -c $^ 
-
-clean:
+clean :
 	rm -f $(OBJ)
-	$(MAKE) fclean -C libft
 
-fclean: clean
+fclean : clean
 	rm -f $(NAME)
 
-re: fclean all
+re : fclean all
 
 .PHONY : all bonus clean fclean re
+.SILENT :

@@ -6,7 +6,7 @@
 /*   By: adouay <adouay@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/20 11:34:38 by adouay            #+#    #+#             */
-/*   Updated: 2022/09/24 22:35:40 by adouay           ###   ########.fr       */
+/*   Updated: 2022/09/29 18:05:06 by adouay           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,13 +16,6 @@ void	parse_args(int ac, char **av, t_pipex *pipex)
 {
 	if (ac < 5)
 		exit (arg_error());
-	if (ft_strlen(av[ac - 1]) == 0)
-	{
-		file_error(av[ac - 1]);
-		exit(0);
-	}
-	if (ft_strlen(av[1]) == 0)
-		file_error(av[1]);
 	if (ft_strncmp(av[1], "here_doc", 8) == 0 && av[1][8] == '\0')
 		pipex->here_doc = 1;
 	if (ac < 6 && pipex->here_doc == 1)
@@ -62,6 +55,10 @@ void	heredoc_or_not(t_pipex *pipex, int ac, char **av)
 		pipex->index = 3;
 		here_doc(pipex, av[2]);
 		pipex->outfile_fd = open_file(av[ac - 1], APPEND);
+		if (pipex->outfile_fd == -1 && ft_strlen(av[ac - 1]) != 0)
+			perror("open");
+		if (pipex->outfile_fd == -1 && ft_strlen(av[ac - 1]) == 0)
+			file_error("");
 	}
 	else
 	{
@@ -69,7 +66,13 @@ void	heredoc_or_not(t_pipex *pipex, int ac, char **av)
 		pipex->infile_fd = open_file(av[1], RDONLY);
 		if (pipex->infile_fd == -1 && ft_strlen(av[1]) != 0)
 			perror("open");
+		if (pipex->infile_fd == -1 && ft_strlen(av[1]) == 0)
+			file_error("");
 		pipex->outfile_fd = open_file(av[ac - 1], TRUNC);
+		if (pipex->outfile_fd == -1 && ft_strlen(av[ac - 1]) != 0)
+			perror("open");
+		if (pipex->outfile_fd == -1 && ft_strlen(av[ac - 1]) == 0)
+			file_error("");
 	}
 }
 
@@ -91,5 +94,9 @@ int	main(int ac, char **av, char **envp)
 	while (wpid > 0)
 		wpid = waitpid(-1, NULL, 0);
 	close_pipe(pipex.fd);
+	if (pipex.infile_fd > 0)
+		close(pipex.infile_fd);
+	if (pipex.outfile_fd > 0)
+		close(pipex.outfile_fd);
 	return (0);
 }

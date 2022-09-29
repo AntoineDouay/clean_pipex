@@ -6,11 +6,15 @@
 #    By: adouay <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/03 20:53:27 by adouay            #+#    #+#              #
-#    Updated: 2022/05/09 16:22:09 by adouay           ###   ########.fr        #
+#    Updated: 2022/09/26 15:08:28 by adouay           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = libft.a
+
+LIBFT_B = libft_base.a
+
+GNL = gnl/gnl.a
 
 CC = gcc -Wall -Wextra -Werror
 
@@ -64,20 +68,27 @@ OBJ = $(SRC:.c=.o)
 all : $(NAME)
 
 $(NAME) : $(OBJ)
-	ar rc $(NAME) $^
+	@$(MAKE) -C gnl
+	echo "\033[33mMaking Libft\033[0m"
+	ar rc $(LIBFT_B) $^
+	ar rcT $(NAME) $(LIBFT_B) $(GNL) $^
+	echo "\033[32mDone\033[0m"
 
 %.o : %.c
 	$(CC) -c $^
 
 bonus : $(OBJ) $(BONUS_OBJ)
-	ar rc $(NAME) $^
+	ar rc $(LIBFT_B) $^
 
 clean :
+	$(MAKE) fclean -C gnl
 	rm -f $(OBJ) $(BONUS_OBJ)
 
 fclean : clean
+	rm -f $(LIBFT_B)
 	rm -f $(NAME)
 
 re : fclean all
 
 .PHONY : all bonus clean fclean re
+.SILENT :

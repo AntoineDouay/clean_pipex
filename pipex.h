@@ -6,7 +6,7 @@
 /*   By: adouay <adouay@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/20 11:34:30 by adouay            #+#    #+#             */
-/*   Updated: 2022/09/24 23:21:52 by adouay           ###   ########.fr       */
+/*   Updated: 2022/09/26 12:36:18 by adouay           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 # define PIPEX_H
 
 # include "libft/libft.h"
-# include "get_next_line_bonus.h"
 # include <unistd.h>
 # include <sys/wait.h>
 

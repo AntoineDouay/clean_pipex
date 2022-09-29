@@ -6,7 +6,7 @@
 /*   By: adouay <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/30 15:48:49 by adouay            #+#    #+#             */
-/*   Updated: 2022/09/23 18:25:16 by adouay           ###   ########.fr       */
+/*   Updated: 2022/09/26 13:43:50 by adouay           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	here_doc2(int fd[3], char *limiter)
 		{
 			free(line);
 			fd[2] = fd[0];
-			close_pipe(fd);
+			close(fd[0]);
 			exit(0);
 		}
 		ft_putstr_fd(line, fd[1]);
